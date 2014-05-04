@@ -3,19 +3,28 @@
 #include "compress_algorithms.h"
 #include "disjoint_set.h"
 
+#include <unordered_set>
 #include <iostream>
 #include <set>
 
 BreakpointGraph::~BreakpointGraph()
 {
+	DEBUG_PRINT("Graph destructor");
+
+	std::unordered_set<Edge*> toDelete;
 	for (int node : this->iterNodes())
 	{
-		this->removeNode(node);
+		//this->removeNode(node);
+		for (Edge* e : _nodes[node].edges) toDelete.insert(e);
 	}
+	for (Edge* e : toDelete) delete e;
+
+	DEBUG_PRINT("Graph destructor - finished");
 }
 
 BreakpointGraph::BreakpointGraph(const std::vector<Permutation>& permutations)
 {
+	DEBUG_PRINT("Building breakpoint graph");
 	for (auto &perm : permutations)
 	{
 		assert(!perm.blocks.empty());
@@ -78,6 +87,7 @@ namespace
 {
 	std::unordered_map<Edge*, int> getConjunctionEdges(BreakpointGraph& bg)
 	{
+		DEBUG_PRINT("Getting conjunction edges");
 		std::unordered_map<Edge*, int> edgeToGroup;
 		std::unordered_map<Edge*, SetNode<int>*> setNodes;
 		int nextId = 1;
@@ -113,6 +123,7 @@ namespace
 		}
 		for (auto &nodePair : setNodes) delete nodePair.second;
 
+		DEBUG_PRINT("Getting conjunction edges - done");
 		return edgeToGroup;
 	}
 }
@@ -162,5 +173,5 @@ void BreakpointGraph::getPermutations(PermVec& permutations,
 	for (auto &edgePair : edgeToGroup)
 		blockGroups[getEdgeId(edgePair.first)] = edgePair.second;
 		
-	//DEBUG_PRINT("Reading permutations from graph - finished");
+	DEBUG_PRINT("Reading permutations from graph - finished");
 }

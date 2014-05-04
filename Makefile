@@ -5,5 +5,7 @@ export CPP := g++ -std=c++0x
 
 all: 
 	make all -C ${SRC}
+debug:
+	make debug -C ${SRC}
 clean: 
 	make clean -C ${SRC}

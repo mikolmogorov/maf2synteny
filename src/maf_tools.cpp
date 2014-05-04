@@ -9,6 +9,7 @@
 
 PermVec mafToPermutations(const std::string& mafFile, int minBlockLen)
 {
+	DEBUG_PRINT("Reading maf file");
 	const float MAX_GAP_RATE = 0.3;
 
 	int blockId = 1;
@@ -87,5 +88,6 @@ PermVec mafToPermutations(const std::string& mafFile, int minBlockLen)
 					  permutations.back().blocks.end(), cmp);
 		}
 	}
+	DEBUG_PRINT("Finished reading");
 	return permutations;
 }
