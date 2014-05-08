@@ -46,6 +46,7 @@ void compressPaths(const PermVec& permsIn, int maxGap, PermVec& permsOut,
 {
 	BreakpointGraph bg(permsIn);
 	int paths = compressGraph(bg, maxGap);
+	(void)paths;	//disable warning
 	DEBUG_PRINT("Initial compression: " << paths << " paths");
 	bg.getPermutations(permsOut, groupsOut);
 }
