@@ -15,7 +15,7 @@ struct Edge
 {
 	Edge(int left, int right, int seqId): 
 		leftNode(left), rightNode(right), seqId(seqId),
-		prevEdge(nullptr), nextEdge(nullptr), sign(1) {}
+		prevEdge(nullptr), nextEdge(nullptr) {}
 	bool hasNode(int node) 	{return node == leftNode || node == rightNode;}
 	int  getLen() 			{return rightPos - leftPos;}
 
@@ -28,7 +28,6 @@ struct Edge
 	size_t rightPos;
 	Edge* prevEdge;
 	Edge* nextEdge;
-	int sign;
 };
 
 typedef std::vector<Edge*> 	EdgeVec;

@@ -36,9 +36,7 @@ BreakpointGraph::BreakpointGraph(const std::vector<Permutation>& permutations)
 		{
 			if (this->getBlackEdges(block.blockId, -block.blockId).empty())
 			{
-				Edge* e = this->addEdge(block.blockId, -block.blockId, 
-										Edge::BLACK);
-				e->sign = block.sign;
+				this->addEdge(block.blockId, -block.blockId, Edge::BLACK);
 			}
 		}
 
@@ -159,7 +157,6 @@ void BreakpointGraph::getPermutations(PermVec& permutations,
 			int end = curEdge->leftPos;
 			assert(end >= start);
 			int sign = (blackEdges[0]->rightNode == curEdge->leftNode) ? 1 : -1;
-			//sign *= blackEdges[0]->sign;
 
 			permutations.back().blocks.push_back(Block(blockId, sign, 
 													   start, end));
