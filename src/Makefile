@@ -1,5 +1,5 @@
 CXXFLAGS += -Wall
-OUT_BIN := ${BIN_DIR}/ragout-maf2synteny
+OUT_BIN := ${BIN_DIR}/maf2synteny
 
 .PHONY: all clean debug
 

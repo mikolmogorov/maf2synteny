@@ -89,6 +89,8 @@ std::vector<ParamPair> parseSimplParamsFile(const std::string& filename)
 	while(!fin.eof())
 	{
 		std::getline(fin, buffer);
+		if (buffer.empty()) break;
+
 		size_t sep = buffer.find_first_of(" \t");
 		if (sep == std::string::npos)
 		{
@@ -97,7 +99,6 @@ std::vector<ParamPair> parseSimplParamsFile(const std::string& filename)
 		
 		int k = atoi(buffer.substr(0, sep).c_str());
 		int d = atoi(buffer.substr(sep + 1).c_str());
-		std::cerr << k << " " << d << std::endl;
 		out.push_back({k, d});
 	}
 	return out;

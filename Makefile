@@ -1,5 +1,6 @@
 SRC := src
-export CPP := g++ -std=c++0x
+export BIN_DIR = $(shell pwd)
+export CXXFLAGS := -std=c++0x
 
 .PHONY: clean all
 
