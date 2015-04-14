@@ -175,7 +175,7 @@ bool parseArgs(int argc, char** argv, std::string& mafFile, std::string& outDir,
 	blockSizes = {5000};
 	simplParams = DEFAULT_PARAMS;
 
-	const char* optString = "o:s:b:?";
+	const char* optString = "o:s:b:h";
 	int opt = 0;
 	while ((opt = getopt(argc, argv, optString)) != -1)
 	{
@@ -202,9 +202,9 @@ bool parseArgs(int argc, char** argv, std::string& mafFile, std::string& outDir,
 			blockSizes.push_back(std::stoi(argString.substr(prevPos)));
 			break;
 		}
-		case '?':
+		case 'h':
 			printUsage();
-			return false;
+			exit(0);
 		}
 	}
 	if (argc - optind != 1)
