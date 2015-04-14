@@ -10,5 +10,3 @@ debug:
 	make debug -C ${SRC}
 clean: 
 	make clean -C ${SRC}
-pylib:
-	make pylib -C ${SRC}

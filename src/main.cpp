@@ -2,14 +2,10 @@
 //This file is a part of Ragout program.
 //Released under the BSD license (see LICENSE file)
 
-#ifdef PYTHON_LIB
-#include <Python.h>
-#include <signal.h>
-#include <setjmp.h>
-#endif
 #include <iostream>
 #include <stdexcept>
 #include <fstream>
+#include <getopt.h>
 
 #include "breakpoint_graph.h"
 #include "compress_algorithms.h"
@@ -104,6 +100,9 @@ std::vector<ParamPair> parseSimplParamsFile(const std::string& filename)
 	return out;
 }
 
+static std::vector<ParamPair> DEFAULT_PARAMS = 
+			{{30, 10}, {100, 100}, {500, 1000}, {1000, 5000}, {5000, 15000}};
+
 void doJob(const std::string& inputMaf, const std::string& outDir, 
 		   std::vector<ParamPair> simplParams, std::vector<int> minBlockSizes)
 {
@@ -155,28 +154,81 @@ void doJob(const std::string& inputMaf, const std::string& outDir,
 	}
 }
 
+bool parseArgs(int argc, char** argv, std::string& mafFile, std::string& outDir,
+			   std::vector<int>& blockSizes, std::vector<ParamPair>& simplParams)
+{
+	auto printUsage = []()
+	{
+		std::cerr << "Usage: maf2synteny [-o out_dir] [-s simpl_params] "
+				  << "[-m block_sizes] maf_file\n\n"
+				  << "positional arguments:\n"
+				  << "\tmaf_file\tpath to maf file\n"
+				  << "\noptional arguments:\n"
+				  << "\t-o out_dir\tpath to the output directory [default = .]\n"
+				  << "\t-s simpl_params\tpath to a file with custom "
+				  << "simplification parameters [default = not set]\n"
+				  << "\t-b block_sizes\tcomma-separated list of synteny block "
+				  << "scales [default = 5000]\n";
+	};
+
+	outDir = ".";
+	blockSizes = {5000};
+	simplParams = DEFAULT_PARAMS;
+
+	const char* optString = "o:s:b:?";
+	int opt = 0;
+	while ((opt = getopt(argc, argv, optString)) != -1)
+	{
+		switch(opt)
+		{
+		case 'o':
+			outDir = optarg;
+			break;
+		case 's':
+			simplParams = parseSimplParamsFile(optarg);
+			break;
+		case 'b':
+		{
+			size_t prevPos = 0;
+			size_t pos = 0;
+			std::string argString = optarg;
+			blockSizes.clear();
+			while ((pos = argString.find(',', prevPos)) != 
+					std::string::npos)
+			{
+				blockSizes.push_back(std::stoi(argString.substr(prevPos, pos)));
+				prevPos = pos + 1;
+			}
+			blockSizes.push_back(std::stoi(argString.substr(prevPos)));
+			break;
+		}
+		case '?':
+			printUsage();
+			return false;
+		}
+	}
+	if (argc - optind != 1)
+	{
+		printUsage();
+		return false;
+	}
+	mafFile = *(argv + optind);
+	return true;
+}
+
 int main(int argc, char** argv)
 {
-	if (argc < 4)
-	{
-		std::cerr << "Usage: maf2synteny maf_file out_dir simpl_params "
-				  << "block_size_1 [block_size_2 ...]\n";
+	std::string inputMaf;
+	std::string outDir;
+	std::vector<int> blockSizes;
+	std::vector<ParamPair> simplParams;
+	
+	if (!parseArgs(argc, argv, inputMaf, outDir, blockSizes, simplParams))
 		return 1;
-	}
-	std::string inputMaf = argv[1];
-	std::string outDir = argv[2];
-	std::string paramsFile = argv[3];
-
-	std::vector<int> sizes;
-	for (int i = 4; i < argc; ++i)
-	{
-		sizes.push_back(atoi(argv[i]));
-	}
 
 	try
 	{
-		std::vector<ParamPair> simplParams = parseSimplParamsFile(paramsFile);
-		doJob(inputMaf, outDir, simplParams, sizes);
+		doJob(inputMaf, outDir, simplParams, blockSizes);
 	}
 	catch (std::runtime_error& e)
 	{
@@ -186,61 +238,3 @@ int main(int argc, char** argv)
 
 	return 0;
 }
-
-#ifdef PYTHON_LIB
-static jmp_buf g_jmpEnv;
-void sigintHandler(int s)
-{
-	longjmp(g_jmpEnv, 1);
-}
-
-static PyObject* _make_synteny(PyObject* self, PyObject* args)
-{
-	const char* mafFile = 0;
-	const char* outDir = 0;
-	std::vector<int> blockSizes;
-	int terminate = -1;
-
-	PyObject* listObj = nullptr;
-	if (!PyArg_ParseTuple(args, "ssO", &mafFile, &outDir, &listObj))
-	{
-		return Py_False;
-	}
-	int nBlocks = PyList_Size(listObj);
-	for (int i = 0; i < nBlocks; ++i)
-	{
-		blockSizes.push_back(PyInt_AsLong(PyList_GetItem(listObj, i)));
-	}
-
-	struct sigaction pythonSig;
-	sigaction(SIGINT, NULL, &pythonSig);
-	signal(SIGINT, sigintHandler);
-
-	bool result = true;
-	try
-	{
-		terminate = setjmp(g_jmpEnv);
-		if (terminate) throw std::runtime_error("SIGINT catched, exiting");
-		doJob(mafFile, outDir, blockSizes);
-	}
-	catch (std::runtime_error& e)
-	{
-		std::cerr << e.what() << std::endl;
-		result = false;
-	}
-	signal(SIGINT, pythonSig.sa_handler);
-	return PyBool_FromLong((long)result);
-}
-
-static PyMethodDef cmaf2syntenyMethods[] = 
-{
-	{"_make_synteny", _make_synteny,
-	 METH_VARARGS, "Make synteny blocks from maf alignment"},
-	{NULL, NULL, 0, NULL}
-};
-
-PyMODINIT_FUNC initcmaf2synteny()
-{
-	(void)Py_InitModule("cmaf2synteny", cmaf2syntenyMethods);
-}
-#endif

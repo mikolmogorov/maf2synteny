@@ -4,7 +4,7 @@ maf2synteny
 A tool for converting for recovering synteny blocks
 from multiple alignment (in MAF fromat)
 
-This tool is a standalone version of a Ragout module [http://fenderglass.github.io/Ragout]
+This tool is a standalone version of Ragout module [http://fenderglass.github./Ragout]
 
 Install
 -------
@@ -14,9 +14,20 @@ Install
 Usage
 -----
 
-	maf2synteny maf_file out_dir simpl_params block_size_1 [block_size_2 ...]
+Usage: maf2synteny [-o out_dir] [-s simpl_params] [-m block_sizes] maf_file
 
-	maf_file		input file with alignment in maf format
-	out_dir			output directory
-	simpl_params	a file with simplifacation parameters (use default_params.txt)
-	block_size_n	any number of synteny block sizes (will have ouput for every single size)
+positional arguments:
+	maf_file	path to maf file
+
+optional arguments:
+	-o out_dir	path to the output directory [default = .]
+	-s simpl_params	path to a file with simplifcation parameters [default = not set]
+	-b block_sizes	comma-separated list of synteny block scales [default = 5000]
+
+Default simplification parameters:
+----------------------------------
+    30 10
+    100 100
+    500 1000
+    1000 5000
+    5000 15000
