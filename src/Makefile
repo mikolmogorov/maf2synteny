@@ -6,8 +6,11 @@ OUT_BIN := ${BIN_DIR}/maf2synteny
 all: CXXFLAGS += -O2 -DNDEBUG
 all: maf2synteny
 
-debug: CXXFLAGS += -g -D_GLIBCXX_DEBUG -D_DEBUG
+debug: CXXFLAGS += -g -D_GLIBCXX_DEBUG -D_DEBUG -D_DEBUG_LOG
 debug: maf2synteny
+
+log: CXXFLAGS += -D_DEBUG_LOG -O2 -DNDEBUG
+log: maf2synteny
 
 objects := ${patsubst %.cpp,%.o,${wildcard *.cpp}}
 maf2synteny: ${objects}

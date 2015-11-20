@@ -8,5 +8,7 @@ all:
 	make all -C ${SRC}
 debug:
 	make debug -C ${SRC}
+log:
+	make log -C ${SRC}
 clean: 
 	make clean -C ${SRC}

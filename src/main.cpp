@@ -101,7 +101,8 @@ std::vector<ParamPair> parseSimplParamsFile(const std::string& filename)
 }
 
 static std::vector<ParamPair> DEFAULT_PARAMS = 
-			{{30, 10}, {100, 100}, {500, 1000}, {1000, 5000}, {5000, 15000}};
+			{{10, 10}, {30, 100}, {50, 5000}, {100, 7000}, {500, 10000},
+			 {1500, 50000}, {5000, 100000}, {10000, 500000}, {50000, 1000000}};
 
 void doJob(const std::string& inputMaf, const std::string& outDir, 
 		   std::vector<ParamPair> simplParams, std::vector<int> minBlockSizes)
@@ -138,7 +139,7 @@ void doJob(const std::string& inputMaf, const std::string& outDir,
 
 		std::cerr << "\tSimplification with " << ppair.minBlock << " "
 				  << ppair.maxGap << std::endl;
-		PermVec inputBlocks = filterBySize(currentBlocks, BlockGroups(),
+		PermVec inputBlocks = filterBySize(currentBlocks, EMPTY_GROUP,
 										   ppair.minBlock, true);
 		PermVec outBlocks;
 		blockGroups.clear();
