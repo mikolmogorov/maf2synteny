@@ -35,7 +35,7 @@ Input
 -----
 
 maf2synteny takes as input whole genome alignment in `.maf` or `.gff` formats.
-The tools is optimized to work with Cactus or SibeliaZ alignments. Other
+The tool is optimized to work with Cactus or SibeliaZ alignments. Other
 tools that generate alignments in similar format might not be supported.
 
 The main reason for that is that maf2synteny expect all local alignments to be
@@ -55,12 +55,12 @@ two numbers: `min_block max_gap`. Please refer to the paper below
 for the explanation how these parameters control the block
 generation rpcedure.
 
-Default parameters: {30, 10}, {100, 100}, {500, 1000}, {1000, 5000}, {5000, 15000}
+Default parameters: `{30, 10}, {100, 100}, {500, 1000}, {1000, 5000}, {5000, 15000}`
 
 
 Citation
 --------
 
 * Kolmogorov M, Armstrong J, Raney BJ, Streeter I, Dunn M, Yang F, Odom D, Flicek P, Keane TM,
-Thybert D, Paten B. "Chromosome assembly of large and complex genomes using multiple references"
+Thybert D, Paten B., Pham S. "Chromosome assembly of large and complex genomes using multiple references"
 Genome research. 2018 [doi:10.1101/gr.236273.118](https://genome.cshlp.org/content/28/11/1720.short)
