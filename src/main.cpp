@@ -100,9 +100,28 @@ std::vector<ParamPair> parseSimplParamsFile(const std::string& filename)
 	return out;
 }
 
+bool isMaf(const std::string& filename)
+{
+	size_t dotPos = filename.rfind(".");
+	if (dotPos == std::string::npos)
+	{
+		throw std::runtime_error("Can't identify input file type");
+	}
+	std::string suffix = filename.substr(dotPos + 1);
+
+	if (suffix == "maf")
+	{
+		return true;
+	}
+	else if (suffix == "gff")
+	{
+		return false;
+	}
+	throw std::runtime_error("Can't identify input file type");
+}
+
 static std::vector<ParamPair> DEFAULT_PARAMS = 
-			{{10, 10}, {30, 100}, {50, 5000}, {100, 7000}, {500, 10000},
-			 {1500, 50000}, {5000, 100000}, {10000, 500000}, {50000, 1000000}};
+			{{30, 10}, {100, 100}, {500, 1000}, {1000, 5000}, {5000, 15000}};
 
 void doJob(const std::string& inputMaf, const std::string& outDir, 
 		   std::vector<ParamPair> simplParams, std::vector<int> minBlockSizes)
@@ -118,9 +137,17 @@ void doJob(const std::string& inputMaf, const std::string& outDir,
 	std::sort(minBlockSizes.begin(), minBlockSizes.end(), std::greater<int>());
 	makeDirectory(outDir);
 
-	//read maf alignment and join adjacent columns
-	std::cerr << "\tParsing MAF file\n";
-	PermVec mafBlocks = mafToPermutations(inputMaf, MIN_ALIGNMENT);
+	//read block coordinates from file (either maf or gff)
+	PermVec mafBlocks;
+	if (isMaf(inputMaf))
+	{
+		mafBlocks = mafToPermutations(inputMaf, MIN_ALIGNMENT);
+	}
+	else
+	{
+		mafBlocks = parseGff(inputMaf, MIN_ALIGNMENT);
+	}
+
 	compressPaths(mafBlocks, MAX_ALIGNMENT_GAP, currentBlocks, blockGroups);
 
 	//iterative simplification
@@ -161,9 +188,9 @@ bool parseArgs(int argc, char** argv, std::string& mafFile, std::string& outDir,
 	auto printUsage = []()
 	{
 		std::cerr << "Usage: maf2synteny [-o out_dir] [-s simpl_params] "
-				  << "[-m block_sizes] maf_file\n\n"
+				  << "[-m block_sizes] alignment_file\n\n"
 				  << "positional arguments:\n"
-				  << "\tmaf_file\tpath to maf file\n"
+				  << "\talignment_file\tpath to alignment file in maf or gff format\n"
 				  << "\noptional arguments:\n"
 				  << "\t-o out_dir\tpath to the output directory [default = .]\n"
 				  << "\t-s simpl_params\tpath to a file with custom "
