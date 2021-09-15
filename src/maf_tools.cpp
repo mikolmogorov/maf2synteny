@@ -148,7 +148,7 @@ PermVec parseGff(const std::string& filename, int minBlockLen)
 		int blockId = 0;
 		for (auto& attr : split(attributes, ";"))
 		{
-			if (attr.substr(0, 2) == "id") blockId = atoi(attr.substr(3).c_str());
+			if (attr.substr(0, 2) == "id" || attr.substr(0, 2) == "ID") blockId = atoi(attr.substr(3).c_str());
 			//std::cout << attr << " " << blockId << std::endl;
 		}
 		if (blockId == 0) throw std::runtime_error("Error getting block ID");
