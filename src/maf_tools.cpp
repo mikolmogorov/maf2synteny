@@ -124,6 +124,7 @@ PermVec parseGff(const std::string& filename, int minBlockLen)
 	std::cerr << "\tReading GFF file" << std::endl;
 
 	std::unordered_map<std::string, Permutation> permBySeqId;
+	std::unordered_map<std::string, int> sequenceLengths;
 	//std::unordered_map<std::string, std::vector<Block>> newBlocks;
 
 	std::ifstream fin(filename);
@@ -134,6 +135,16 @@ PermVec parseGff(const std::string& filename, int minBlockLen)
 	{
 		std::getline(fin, line);
 		if (line.empty()) continue;
+
+		//reading sequence lengths
+		if (line.substr(0, 17) == "##sequence-region")
+		{
+			auto tokens = split(line, " ");
+			if (tokens.size() != 4) continue;
+			int length = atoi(tokens[3].c_str()) - atoi(tokens[2].c_str()) + 1;
+			sequenceLengths[tokens[1]] = length;
+		}
+
 		if (line[0] == '#') continue;
 
 		auto tokens = split(line, "\t");
@@ -158,6 +169,14 @@ PermVec parseGff(const std::string& filename, int minBlockLen)
 		permBySeqId[seqName].blocks.push_back(Block(blockId, sign, start, end));
 		permBySeqId[seqName].nucLength = std::max(permBySeqId[seqName].nucLength, end);
 		permBySeqId[seqName].seqName = seqName;
+	}
+
+	for (auto permIt : permBySeqId)
+	{
+		if (sequenceLengths.count(permIt.first))
+		{
+			permIt.second.nucLength = sequenceLengths[permIt.first];
+		}
 	}
 
 	std::vector<Permutation> permutations;
