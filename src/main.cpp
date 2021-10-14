@@ -188,7 +188,7 @@ bool parseArgs(int argc, char** argv, std::string& mafFile, std::string& outDir,
 	auto printUsage = []()
 	{
 		std::cerr << "Usage: maf2synteny [-o out_dir] [-s simpl_params] "
-				  << "[-m block_sizes] alignment_file\n\n"
+				  << "[-b block_sizes] alignment_file\n\n"
 				  << "positional arguments:\n"
 				  << "\talignment_file\tpath to alignment file in maf or gff format\n"
 				  << "\noptional arguments:\n"

@@ -166,7 +166,7 @@ public:
 		if (neighbors.size() > 2)
 			return true;
 
-		//all edges should be either balck or colred
+		//all edges should be either black or colored
 		for (auto neighbor : neighbors)
 		{
 			EdgeVec edges = this->getEdges(node, neighbor);
