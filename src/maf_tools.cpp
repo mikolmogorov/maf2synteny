@@ -171,7 +171,7 @@ PermVec parseGff(const std::string& filename, int minBlockLen)
 		permBySeqId[seqName].seqName = seqName;
 	}
 
-	for (auto permIt : permBySeqId)
+	for (auto& permIt : permBySeqId)
 	{
 		if (sequenceLengths.count(permIt.first))
 		{

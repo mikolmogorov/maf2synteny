@@ -143,7 +143,7 @@ bool collapseBulge(BreakpointGraph& graph, const BranchSet& branches,
 		if (branch.size() == 2) //a branch from one colored edge, nothing to do
 			continue;
 
-		//replace three edges with one (colored) -- "hiding" varinance
+		//replace three edges with one (colored) -- "hiding" variance
 		for (Edge* adj : graph.getColoredEdges(branch[0], branch[1]))
 		{
 			Edge* nextAdj = adj->nextEdge;
